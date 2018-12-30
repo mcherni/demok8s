@@ -1,0 +1,10 @@
+node_modules/
+node_modules_linux/
+.bluemix
+.cfignore
+docker-compose-tools.yml
+docker-compose.yml
+manifest.yml
+nodejs_dc.log
+nodejs_restclient.log
+
