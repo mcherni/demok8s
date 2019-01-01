@@ -36,10 +36,10 @@ podTemplate(
         }
         stage ('Build') {
             container ('node') {
-                sh 'npm install --production --silent'
+                sh 'cd /app && npm install --production --silent'
             }
         }
-        def repository
+        
         stage ('Docker') {
             container ('docker') {
                 def registryIp = sh(script: 'getent hosts registry.kube-system | awk \'{ print $1 ; exit }\'', returnStdout: true).trim()
