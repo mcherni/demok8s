@@ -36,23 +36,24 @@ podTemplate(
         }
         stage ('Build') {
             container ('node') {
-                sh 'cd /app && npm install --production --silent'
+                //sh 'cd /app && npm install --production --silent'
+                sh 'ls'
             }
         }
         
-        stage ('Docker') {
-            container ('docker') {
-                def registryIp = sh(script: 'getent hosts registry.kube-system | awk \'{ print $1 ; exit }\'', returnStdout: true).trim()
-                repository = "${registryIp}:80/demo"
-                sh "docker build -t ${repository}:${commitId} ."
-                sh "docker push ${repository}:${commitId}"
-            }
-        }
-        stage ('Deploy') {
-            container ('helm') {
-                sh "/helm init --client-only --skip-refresh"
-                sh "/helm upgrade --install --wait --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
-            }
-        }
+        // stage ('Docker') {
+        //     container ('docker') {
+        //         def registryIp = sh(script: 'getent hosts registry.kube-system | awk \'{ print $1 ; exit }\'', returnStdout: true).trim()
+        //         repository = "${registryIp}:80/demo"
+        //         sh "docker build -t ${repository}:${commitId} ."
+        //         sh "docker push ${repository}:${commitId}"
+        //     }
+        // }
+        // stage ('Deploy') {
+        //     container ('helm') {
+        //         sh "/helm init --client-only --skip-refresh"
+        //         sh "/helm upgrade --install --wait --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
+        //     }
+        // }
     }
 }
