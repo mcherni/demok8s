@@ -40,12 +40,21 @@ podTemplate(
                 sh 'npm install --production --silent && ls'
             }
         }
-        docker.withRegistry('https://mycluster.icp:8500/', 'docker'){
-            stage "Build IMAGE"
-            def pcImg = docker.build("mycluster.icp:8500/default/demo:${commitId}", "-f Dockerfile.ppc64le .")
-            sh "cp /root/.dockercfg ${HOME}/.dockercfg"
-            pcImg.push()
-        }
+        // docker.withRegistry('https://mycluster.icp:8500/', 'docker'){
+        //     stage "Build IMAGE"
+        //     def pcImg = docker.build("mycluster.icp:8500/default/demo:${commitId}", "-f Dockerfile.ppc64le .")
+        //     sh "cp /root/.dockercfg ${HOME}/.dockercfg"
+        //     pcImg.push()
+        // }
+        stage ('Build Applicaion Docker Image & Publish to Registry') {
+             container ('docker') {
+                 docker.withRegistry('https://mycluster.icp:8500/', 'docker') {
+                    def pcImg = docker.build("mycluster.icp:8500/default/demo:${commitId}", "-f Dockerfile.ppc64le .")
+                //  sh "cp /root/.dockercfg ${HOME}/.dockercfg"
+                    pcImg.push()
+                    }
+            }
+         }
         // stage ('Build Applicaion Docker Image & Publish to Registry') {
         //      container ('docker') {
         //          def registryIp = "mycluster.icp:8500"
