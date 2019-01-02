@@ -60,7 +60,7 @@ podTemplate(
                 sh 'ls ~/.helm'
                 // sh "helm init --client-only --skip-refresh"
                 // sh "helm version --tls"
-                sh 'helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo'
+                sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
             }
         }
     }
