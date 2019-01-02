@@ -16,7 +16,7 @@ podTemplate(
         ),
         containerTemplate(
             name: 'helm', 
-            image: 'mycluster.icp:8500/default/ibmcloudcli',
+            image: 'mycluster.icp:8500/default/ibmcloudcli:3.1.1',
             ttyEnabled: true,
             command: 'cat'
         )
