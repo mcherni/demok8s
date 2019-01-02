@@ -37,9 +37,7 @@ podTemplate(
         //def appName = "default/demo"
         def appName
         def repository
-        environment {
-            repositoryIp = ""
-        }
+        
         stage ('Extract') {
             checkout scm
             commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -67,11 +65,12 @@ podTemplate(
         
         stage ('Deploy Application Release') {
             container ('helm') {
-                withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'creds_psw', usernameVariable: 'creds_usr')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'creds_psw', usernameVariable: 'creds_usr'),usernamePassword(credentialsId: 'host', passwordVariable: 'hostip', usernameVariable: 'hostdns'),\
+                usernamePassword(credentialsId: 'repository', passwordVariable: 'repo_port', usernameVariable: 'repo_url'), usernamePassword(credentialsId: 'appname', passwordVariable: 'imagename', usernameVariable: 'namespace')]) {
                     //sh "echo ${creds_usr}:${creds_psw}"
-                    sh 'echo "149.81.85.219 mycluster.icp" >> /etc/hosts'
+                    sh 'echo '"${hostip} ${hostdns}"' >> /etc/hosts'
                     sh "echo ${creds_usr}:${creds_psw}"
-                    sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n default"
+                    sh "cloudctl login -a https://${repo_url}:8443 --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n ${namespace}"
                     //sh 'ls ~/.kube'
                     //sh 'ls ~/.helm'
                     repository = "${registryIp}/${appName}"
