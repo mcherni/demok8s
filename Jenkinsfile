@@ -35,7 +35,7 @@ podTemplate(
         def appName = "default/demo"
         def repository = "${registryIp}/${appName}"
         environment {
-            creds = credentials('docker')
+            repositoryIp = ""
         }
         stage ('Extract') {
             checkout scm
@@ -48,10 +48,14 @@ podTemplate(
         }
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
-                 docker.withRegistry('https://mycluster.icp:8500/', 'docker') {
-                    def pcImg = docker.build("${registryIp}/${appName}:${commitId}")
-                    pcImg.push()
+                 withCredentials([usernamePassword(credentialsId: 'repository', passwordVariable: 'repo_port', usernameVariable: 'repo_url')]) {
+                    def endpoint = "https://${repo_url}:${repo_port}"
+                    docker.withRegistry("${endpoint}", 'docker') {
+                        def pcImg = docker.build("${registryIp}/${appName}:${commitId}")
+                        pcImg.push()
                     }
+                 }
+                 
             }
          }
         
