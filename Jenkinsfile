@@ -68,7 +68,7 @@ podTemplate(
                 withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'creds_psw', usernameVariable: 'creds_usr'),usernamePassword(credentialsId: 'host', passwordVariable: 'hostip', usernameVariable: 'hostdns'),\
                 usernamePassword(credentialsId: 'repository', passwordVariable: 'repo_port', usernameVariable: 'repo_url'), usernamePassword(credentialsId: 'appname', passwordVariable: 'imagename', usernameVariable: 'namespace')]) {
                     
-                    sh 'echo "${hostip}" "${hostdns}"" >> /etc/hosts'
+                    sh 'echo "${hostip}" "${hostdns}" >> /etc/hosts'
                     
                     sh "cloudctl login -a https://${repo_url}:8443 --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n ${namespace}"
                     //sh 'ls ~/.kube'
