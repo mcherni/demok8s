@@ -54,7 +54,7 @@ podTemplate(
         
         stage ('Deploy Application Release') {
             container ('helm') {
-            
+                sh 'echo "149.81.85.219 mycluster.icp" >> /etc/hosts'
                 sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u mcherni -p P@ssw0rd -n default"
                 sh 'ls ~/.kube'
                 sh 'ls ~/.helm'
