@@ -29,9 +29,9 @@ podTemplate(
     ]
 ) {
     node('jenkins-agt') {
-        withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'creds_psw', usernameVariable: 'creds_usr'),usernamePassword(credentialsId: 'host', passwordVariable: 'hostip', usernameVariable: 'hostdns'),\
-                usernamePassword(credentialsId: 'repository', passwordVariable: 'repo_port', usernameVariable: 'repo_url'), usernamePassword(credentialsId: 'appname', passwordVariable: 'imagename', usernameVariable: 'namespace'),\
-                usernamePassword(credentialsId: 'kubernetes', passwordVariable: 'k8sport', usernameVariable: 'k8sip')]) {
+        withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'dockerpsw', usernameVariable: 'dockerusr'),usernamePassword(credentialsId: 'host', passwordVariable: 'hostip', usernameVariable: 'hostdns'),\
+                usernamePassword(credentialsId: 'repository', passwordVariable: 'repoport', usernameVariable: 'repourl'), usernamePassword(credentialsId: 'appname', passwordVariable: 'imagename', usernameVariable: 'namespace'),\
+                usernamePassword(credentialsId: 'kubernetes', passwordVariable: 'k8sport', usernameVariable: 'k8sprotocol')]) {
         def commitId
         def endpoint
         def registryIp
@@ -50,8 +50,8 @@ podTemplate(
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
                 
-                    endpoint = "https://${repo_url}:${repo_port}"
-                    registryIp = "${repo_url}:${repo_port}"
+                    endpoint = "${k8sprotocol}://${repourl}:${repoport}"
+                    registryIp = "${repourl}:${repoport}"
                     appName="${namespace}/${imagename}"
                     docker.withRegistry("${endpoint}", 'docker') {
                         def pcImg = docker.build("${registryIp}/${appName}:${commitId}")
@@ -64,7 +64,7 @@ podTemplate(
             container ('helm') {
               
                     sh 'echo "${hostip}" "${hostdns}" >> /etc/hosts'        
-                    sh "cloudctl login -a https://${k8sip}:${k8sport} --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n ${namespace}"
+                    sh "cloudctl login -a ${k8sprotocol}://${repourl}:${k8sport} --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n ${namespace}"
                     repository = "${registryIp}/${appName}"
                     sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
               
