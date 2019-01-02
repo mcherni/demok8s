@@ -49,7 +49,7 @@ podTemplate(
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
                  docker.withRegistry('https://mycluster.icp:8500/', 'docker') {
-                    def pcImg = docker.build("mycluster.icp:8500/default/demo:${commitId}", "-f Dockerfile.ppc64le .")
+                    def pcImg = docker.build("mycluster.icp:8500/default/demo:${commitId}")
                 //  sh "cp /root/.dockercfg ${HOME}/.dockercfg"
                     pcImg.push()
                     }
