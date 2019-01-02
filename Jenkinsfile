@@ -62,7 +62,7 @@ podTemplate(
             container ('helm') {
                 sh "/helm init --client-only --skip-refresh"
                 
-                sh "/helm upgrade --install --wait --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
+                sh "/helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
             }
         }
     }
