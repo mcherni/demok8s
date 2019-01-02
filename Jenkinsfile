@@ -40,7 +40,7 @@ podTemplate(
         
         stage ('Extract') {
             checkout scm
-            commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+            commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim().toString()
         }
         stage ('Build Appliction') {
             container ('node') {
