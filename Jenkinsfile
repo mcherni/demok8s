@@ -60,9 +60,15 @@ podTemplate(
         
         stage ('Deploy Application Release') {
             container ('helm') {
-                sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u mcherni -p P@ssw0rd -n default"
+                sh 'kubectl config set-cluster mycluster --server=https://149.81.85.219:8001 --insecure-skip-tls-verify=true'
+                sh 'kubectl config set-context mycluster-context --cluster=mycluster'
+                sh 'kubectl config set-credentials mcherni --token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoianVxcjVkMHl6bnNibjljaHp5ejUiLCJyZWFsbU5hbWUiOiJjdXN0b21SZWFsbSIsInVuaXF1ZVNlY3VyaXR5TmFtZSI6Im1jaGVybmkiLCJpc3MiOiJodHRwczovL215Y2x1c3Rlci5pY3A6OTQ0My9vaWRjL2VuZHBvaW50L09QIiwiYXVkIjoiZDZmOWY1MTI4NzMxNjMzYjUwNzE3MmNjODFmMjc5ZWIiLCJleHAiOjE1NDY0NTI0NTcsImlhdCI6MTU0NjQyMzY1Nywic3ViIjoibWNoZXJuaSIsInRlYW1Sb2xlTWFwcGluZ3MiOltdfQ.qbCvQZaIgyXt1dC2jkaEnuOx6qyQUJquZHa7YDQ9EM6nc5z7lWOOUmSTB5f65VfJjikrKUNBUuzjSf9-shrhjxGe5u08xeP8c2e4ykRrVkgzSzMYHD9LahUekMg4-9oXp5Vs0L6mi-PxVO_I7t3E-OLxTeQPLeiDl3vwHb3uou6FeA8umYoUMMQqtP-DWOJPbz2YY8h9Fdf8gWvJAguCRFoGOw_lUIrKZx4ooS6pWi-nOnNXgnDt3dWiUVYZW2fTroYg5YK-Cwv_Ik1-X84umLdpx-qMfFXMecmurcvEqNBImUixmbjG0G3xcdQeprGkCJgb9KBzRtUsk6mMUBMFEQ'
+                sh 'kubectl config set-context mycluster-context --user=mcherni --namespace=cert-manager'
+                sh 'kubectl config use-context mycluster-context'
+
+                //sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u mcherni -p P@ssw0rd -n default"
                 sh "helm init --client-only --skip-refresh"
-                
+                sh "helm version --tls"
                 sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
             }
         }
