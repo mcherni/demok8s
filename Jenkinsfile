@@ -16,7 +16,7 @@ podTemplate(
         ),
         containerTemplate(
             name: 'helm', 
-            image: 'ibmcom/k8s-helm:v2.6.0',
+            image: 'ibmcom/ibm-cloud-developer-tools-amd64',
             ttyEnabled: true,
             command: 'cat'
         )
