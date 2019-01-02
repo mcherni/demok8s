@@ -60,7 +60,7 @@ podTemplate(
         
         stage ('Deploy Application Release') {
             container ('helm') {
-                sh "/helm init --client-only --skip-refresh --tls"
+                sh "/helm init --client-only --skip-refresh"
                 sh "/helm upgrade --install --tls --wait --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
             }
         }
