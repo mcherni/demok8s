@@ -60,6 +60,7 @@ podTemplate(
         
         stage ('Deploy Application Release') {
             container ('helm') {
+                sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u mcherni -p P@ssw0rd -n default"
                 sh "helm init --client-only --skip-refresh"
                 
                 sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
