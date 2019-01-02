@@ -44,6 +44,9 @@ podTemplate(
              container ('docker') {
                  def registryIp = "mycluster.icp:8500"
                  repository = "${registryIp}/demo"
+                 sh 'echo "{" >> /etc/docker/daemon.json && echo "\"insecure-registries\": [\"mycluster.icp:8500\"]" >> /etc/docker/daemon.json && echo "}" >> /etc/docker/daemon.json'
+                 sh 'more /etc/docker/daemon.json'
+                 sh 'systemctl reload && systemctl docker restart'
 
                  sh "ls && docker build -t ${repository}:${commitId} ."
                  sh "docker login ${repository}:${commitId} -u mcherni -p P@ssw0rd && docker push ${repository}:${commitId}"
