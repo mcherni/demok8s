@@ -34,8 +34,9 @@ podTemplate(
         def endpoint
         //def registryIp = "mycluster.icp:8500"
         def registryIp
-        def appName = "default/demo"
-        def repository = "${registryIp}/${appName}"
+        //def appName = "default/demo"
+        def appName
+        def repository
         environment {
             repositoryIp = ""
         }
@@ -73,6 +74,7 @@ podTemplate(
                     sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n default"
                     //sh 'ls ~/.kube'
                     //sh 'ls ~/.helm'
+                    repository = "${registryIp}/${appName}"
                     sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
                 }
                 // 
