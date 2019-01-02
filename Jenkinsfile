@@ -34,6 +34,9 @@ podTemplate(
         def registryIp = "mycluster.icp:8500"
         def appName = "default/demo"
         def repository = "${registryIp}/${appName}"
+        environment {
+            creds = credentials('docker')
+        }
         stage ('Extract') {
             checkout scm
             commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -55,9 +58,11 @@ podTemplate(
         stage ('Deploy Application Release') {
             container ('helm') {
                 sh 'echo "149.81.85.219 mycluster.icp" >> /etc/hosts'
+                sh "echo ${creds_usr}:${creds_psw}"
                 sh "cloudctl login -a https://mycluster.icp:8443 --skip-ssl-validation -u mcherni -p P@ssw0rd -n default"
                 sh 'ls ~/.kube'
                 sh 'ls ~/.helm'
+
                 // sh "helm init --client-only --skip-refresh"
                 // sh "helm version --tls"
                 sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
