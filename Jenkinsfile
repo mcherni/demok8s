@@ -31,6 +31,9 @@ podTemplate(
     node('mypod') {
         
         def commitId
+        def registryIp = "mycluster.icp:8500"
+        def appName = "default/demo"
+        def repository = "${registryIp}/${appName}"
         stage ('Extract') {
             checkout scm
             commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -49,30 +52,17 @@ podTemplate(
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
                  docker.withRegistry('https://mycluster.icp:8500/', 'docker') {
-                    def pcImg = docker.build("mycluster.icp:8500/default/demo:${commitId}")
-                //  sh "cp /root/.dockercfg ${HOME}/.dockercfg"
+                    def pcImg = docker.build("${registryIp}/${appName}:${commitId}")
                     pcImg.push()
                     }
             }
          }
-        // stage ('Build Applicaion Docker Image & Publish to Registry') {
-        //      container ('docker') {
-        //          def registryIp = "mycluster.icp:8500"
-        //          repository = "${registryIp}/demo"
-        //          sh 'more /var/run/docker.sock'
-        //         //  sh 'echo "{" >> /etc/docker/daemon.json && echo "\"insecure-registries\": [\"mycluster.icp:8500\"]" >> /etc/docker/daemon.json && echo "}" >> /etc/docker/daemon.json'
-        //         //  sh 'more /etc/docker/daemon.json'
-        //         //  sh 'systemctl reload && systemctl docker restart'
-
-        //         //  sh "ls && docker build -t ${repository}:${commitId} ."
-        //         //  sh "docker login ${repository}:${commitId} -u mcherni -p P@ssw0rd && docker push ${repository}:${commitId}"
-        //      }
-        //  }
-        // stage ('Deploy Application Release') {
-        //     container ('helm') {
-        //         sh "/helm init --client-only --skip-refresh"
-        //         sh "/helm upgrade --install --wait --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
-        //     }
-        // }
+        
+        stage ('Deploy Application Release') {
+            container ('helm') {
+                sh "/helm init --client-only --skip-refresh --tls"
+                sh "/helm upgrade --install --tls --wait --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
+            }
+        }
     }
 }
