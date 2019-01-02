@@ -29,22 +29,22 @@ podTemplate(
     ]
 ) {
     node('mypod') {
-        def commitId
-        stage ('Extract') {
-            checkout scm
-            commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-        }
-        stage ('Build Appliction') {
-            container ('node') {
-                sh 'npm install --production --silent && ls'
-            }
-        }
+        // def commitId
+        // stage ('Extract') {
+        //     checkout scm
+        //     commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        // }
+        // stage ('Build Appliction') {
+        //     container ('node') {
+        //         sh 'npm install --production --silent && ls'
+        //     }
+        // }
         
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
                  def registryIp = "mycluster.icp:8500"
                  repository = "${registryIp}/demo"
-                 sh 'ls /var/run/docker.sock'
+                 sh 'more /var/run/docker.sock'
                 //  sh 'echo "{" >> /etc/docker/daemon.json && echo "\"insecure-registries\": [\"mycluster.icp:8500\"]" >> /etc/docker/daemon.json && echo "}" >> /etc/docker/daemon.json'
                 //  sh 'more /etc/docker/daemon.json'
                 //  sh 'systemctl reload && systemctl docker restart'
