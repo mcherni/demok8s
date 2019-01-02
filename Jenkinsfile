@@ -31,7 +31,9 @@ podTemplate(
     node('mypod') {
         
         def commitId
-        def registryIp = "mycluster.icp:8500"
+        def endpoint
+        //def registryIp = "mycluster.icp:8500"
+        def registryIp
         def appName = "default/demo"
         def repository = "${registryIp}/${appName}"
         environment {
@@ -48,8 +50,11 @@ podTemplate(
         }
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
-                 withCredentials([usernamePassword(credentialsId: 'repository', passwordVariable: 'repo_port', usernameVariable: 'repo_url')]) {
-                    def endpoint = "https://${repo_url}:${repo_port}"
+                 withCredentials([usernamePassword(credentialsId: 'repository', passwordVariable: 'repo_port', usernameVariable: 'repo_url'), usernamePassword(credentialsId: 'appname', passwordVariable: 'imagename', usernameVariable: 'namespace')]) {
+                    endpoint = "https://${repo_url}:${repo_port}"
+                    registryIp = "${repo_url}:${repo_port}"
+                    appName="${namespace}/${imagename}"
+
                     docker.withRegistry("${endpoint}", 'docker') {
                         def pcImg = docker.build("${registryIp}/${appName}:${commitId}")
                         pcImg.push()
