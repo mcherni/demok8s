@@ -50,7 +50,7 @@ podTemplate(
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
                 
-                    endpoint = "https://mycluster.icp:8443"
+                    endpoint = "https://mycluster.icp:8500"
                     registryIp = "mycluster.icp:8500"
                     appName="default/demo"
                     docker.withRegistry("${endpoint}", 'docker') {
