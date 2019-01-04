@@ -64,7 +64,7 @@ podTemplate(
             container ('helm') {
               
                     sh 'echo "${hostip}" "${hostdns}" >> /etc/hosts'        
-                    sh "cloudctl login -a ${k8sprotocol}://${repourl}:${k8sport} --skip-ssl-validation -u ${creds_usr} -p ${creds_psw} -n ${namespace}"
+                    sh "cloudctl login -a ${k8sprotocol}://${repourl}:${k8sport} --skip-ssl-validation -u ${dockerusr} -p ${dockerpsw} -n ${namespace}"
                     repository = "${registryIp}/${appName}"
                     sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
               

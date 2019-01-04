@@ -5,4 +5,5 @@ docker-compose.yml
 manifest.yml
 nodejs_dc.log
 nodejs_restclient.log
+node_modules
 
