@@ -50,9 +50,9 @@ podTemplate(
         stage ('Build Applicaion Docker Image & Publish to Registry') {
              container ('docker') {
                 
-                    endpoint = "${k8sprotocol}://${repourl}:${repoport}"
-                    registryIp = "${repourl}:${repoport}"
-                    appName="${namespace}/${imagename}"
+                    endpoint = "https://mycluster.icp:8443"
+                    registryIp = "mycluster.icp:8500"
+                    appName="default/demo"
                     docker.withRegistry("${endpoint}", 'docker') {
                         def pcImg = docker.build("${registryIp}/${appName}:${commitId}")
                         pcImg.push()
@@ -66,7 +66,7 @@ podTemplate(
                     sh 'echo "${hostip}" "${hostdns}" >> /etc/hosts'        
                     sh "cloudctl login -a ${k8sprotocol}://${repourl}:${k8sport} --skip-ssl-validation -u ${dockerusr} -p ${dockerpsw} -n ${namespace}"
                     repository = "${registryIp}/${appName}"
-                    sh "helm upgrade --install --wait --tls --set image.repository=${repository},image.tag=${commitId} demo chart/demo"
+                    sh "helm upgrade --install --wait --tls --set image.tag=${commitId} demo chart/demo"
               
             }
         }
